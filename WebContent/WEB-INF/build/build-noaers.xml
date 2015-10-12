@@ -1,0 +1,97 @@
+<project name="primo" basedir="../" default="all">
+
+	<!-- Local system paths -->
+	<property name="antlr-3.0.1.jar" value="../../ref-libs/antlr-3.0.1.jar"/>
+	<property name="junit-4.8.1.jar" value="../../ref-libs/junit-4.8.1.jar"/>
+	<property name="ldap.jar" value="../../ref-libs/ldap.jar"/>
+	<property name="log4j-1.2.15.jar" value="../../ref-libs/log4j-1.2.15.jar"/>
+	<property name="wls-api.jar" value="../../ref-libs/wls-api.jar"/>
+	<property name="xalan.jar" value="../../ref-libs/xalan.jar"/>
+	<property name="beajar.jar" value="../../ref-libs/com.bea.core.datasource_1.0.2.0.jar"/>
+	<property name="classes12.jar" value="../../ref-libs/classes12.jar"/>
+	<property name="servlet-api.jar" value="../../ref-libs/servlet-api.jar"/>
+			
+	<!-- NOTE: If "dist" target is used, a local
+             "projects/lib" directory will be utilized or created -->
+	<property name="distpath.project" value="dist"/>
+	
+	<!-- Project settings -->
+	<property name="project.title" value="primo"/>
+	<property name="project.distname" value="primo"/>
+	<property name="project.version" value="1.0"/>
+	<property name="project.war" value="primo"/>
+	
+	<!-- classpath for Struts 1.1 -->
+	<path id="compile.classpath">
+		<fileset dir=".">
+			<include name="lib/*.jar"/>
+		</fileset>
+		<pathelement path ="${antlr-3.0.1.jar}"/>
+		<pathelement path ="${junit-4.8.1.jar}"/>
+		<pathelement path ="${ldap.jar}"/>
+		<pathelement path ="${log4j-1.2.15.jar}"/>
+		<pathelement path ="${ojdbc14.jar}"/>
+		<pathelement path ="${wls-api.jar}"/>
+		<pathelement path ="${xalan.jar}"/>		
+		<pathelement path ="${servlet-api.jar}"/>	
+		<pathelement path ="${classes12.jar}"/>
+		<pathelement path ="${beajar.jar}"/>
+		<pathelement path ="${classpath}"/>
+		<pathelement path ="classes"/>
+	</path>
+	
+	<!-- Check timestamp on files -->
+	<target name="prepare">
+		<tstamp/>
+	</target>
+	
+	<!-- Normal build of application -->
+	<target name="compile" depends="prepare">
+		<mkdir dir="classes" />
+		<javac target="1.6" source="1.6" srcdir="../../src" destdir="classes" debug="true">
+			<classpath refid="compile.classpath"/>
+		</javac>
+		<copy todir="classes" flatten="yes">
+			<fileset dir="../../src" >
+				<include name="*.xml" />
+				<include name="*.txt" />
+				<include name="*.xsl" />
+				<include name="*.do" />
+				<include name="*.dtd" />
+				<include name="*.pdf" />
+				<include name="*.properties" />
+			</fileset>
+		</copy>
+	</target>
+	
+	<!-- Remove classes directory for clean build -->
+	<target name="clean" description="Prepare for clean build">
+		<delete dir="dist"/>
+		<delete dir="classes"/>
+	</target>
+	
+	<!-- Build entire project -->
+	<target name="project" depends="clean,prepare,compile"/>
+	
+	<!-- Create binary distribution -->
+	<target name="dist" description="Create binary distribution" depends="project">
+		<mkdir dir="${distpath.project}"/>
+		<jar jarfile="${distpath.project}/${project.distname}.jar" 
+			basedir="./classes"/>
+		<copy file="${distpath.project}/${project.distname}.jar" 
+			todir="${distpath.project}"/>
+		<war basedir="../" 
+			destfile="${distpath.project}/${project.war}.war" 
+			webxml="web.xml">
+			<exclude name="${distpath.project}/${project.distname}-${project.version}.war"/>
+		</war>		
+		<ear destFile="${distpath.project}/${project.war}.ear" appxml="../META-INF/application.xml" >
+			<!-- files to be included in / -->
+			<fileset dir="${distpath.project}" includes="*.war"/>		
+		</ear>
+	</target>
+	
+	<!-- Build project -->
+	<target name="all" depends="project"/>
+		
+</project>

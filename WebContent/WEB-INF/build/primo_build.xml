@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project default="repack" basedir=".">
+
+<!-- _____________________________________ant script initialization______________________________________________ -->
+	
+	<tstamp>
+		<format property="timestamp" pattern="yyyyMMdd_hhmmss"/>
+	</tstamp>
+	<property name="targetDir" location="${pathToEar}/${projectName}_${buildType}_${timestamp}"/>
+	<property name="unzippedEAR_Dir" location="${targetDir}/UnzippedEAR"/>
+	<property name="unzippedWAR_Dir" location="${targetDir}/UnzippedWAR"/>
+		
+<!-- _____________________________________end of ant script initialization_________________________________________ -->
+
+<!-- _____________________________________logging management_________________________________________________ -->
+	
+	<mkdir dir="${targetDir}"/>
+	<record name="${targetDir}/${projectName}_${buildType}_${timestamp}.log"/>
+	
+<!-- _____________________________________end of logging management_________________________________________________ -->
+
+
+<!-- _____________________________________unpacking jar, war & ear files_________________________________________ -->
+	
+	<target name="unzipEAR">
+		<mkdir dir="${unzippedEAR_Dir}"/>
+		<unzip src="${pathToEar}/${originalEarName}${EAR_name_suffix}.ear" dest="${unzippedEAR_Dir}"/>
+	</target>
+	
+	<target name="unzipWAR" depends="unzipEAR">
+		<mkdir dir="${unzippedWAR_Dir}"/>
+		<unzip src="${unzippedEAR_Dir}/${originalEarName}${WAR_name_suffix}.war" dest="${unzippedWAR_Dir}"/>
+	</target>
+	
+<!-- _____________________________________end of unpacking______________________________________________________ -->
+
+	<target name="replace" depends="unzipWAR">
+		
+<!-- ___________________________________________________________________________________________________________ -->
+<!-- _____________________________________start of Infrastructure replacements__________________________________ -->
+
+	<propertyfile file="${unzippedWAR_Dir}/WEB-INF/classes/config.properties">
+			<entry key="PROJ_ENV" value="${PROJ_ENV}"/>
+			<entry key="PROJ_VERSION" value="${PROJ_VERSION}"/>
+			<entry key="SP_USER_NAME" value="${SP_USER_NAME}"/>
+			<entry key="SP_USER_PASS" value="${SP_USER_PASS}"/> 
+			<entry key="SP_DOMAIN" value="${SP_DOMAIN}"/>
+			<entry key="SP_HOST" value="${SP_HOST}"/>
+			<entry key="SP_APPEND_PORT_TO_URL" value="${SP_APPEND_PORT_TO_URL}"/>
+			<entry key="SP_PORT_NUMBER" value="${SP_PORT_NUMBER}"/>
+			<entry key="SP_DOCUMENT_ROOT" value="${SP_DOCUMENT_ROOT}"/>
+			<entry key="LDAP_PROVIDER_URL" value="${LDAP_PROVIDER_URL}"/>			
+			<entry key="SP_SERVICE_REPORT_DOC_MOV_URL" value="${SP_SERVICE_REPORT_DOC_MOV_URL}"/>
+			<entry key="SP_WEB_SERVICE_FILE_UPLOAD_URL" value="${SP_WEB_SERVICE_FILE_UPLOAD_URL}"/>
+			<entry key="SP_WEB_SERVICE_PROMOTE_REPORT_URL" value="${SP_WEB_SERVICE_PROMOTE_REPORT_URL}"/>
+			<entry key="SP_WEB_SERVICE_GROUP_INBOX_URL" value="${SP_WEB_SERVICE_GROUP_INBOX_URL}"/>
+			<entry key="SP_WEB_SERVICE_REJECT_URL" value="${SP_WEB_SERVICE_REJECT_URL}"/>
+			<entry key="SP_WEB_SERVICE_OUTBOUND_URL" value="${SP_WEB_SERVICE_OUTBOUND_URL}"/>
+			<entry key="SP_WEB_SERVICE_NEW_GROUP_URL" value="${SP_WEB_SERVICE_NEW_GROUP_URL}"/>
+			<entry key="SP_WEB_SERVICE_UNREJECT_URL" value="${SP_WEB_SERVICE_UNREJECT_URL}"/>
+			<entry key="SP_WEB_SERVICE_FILE_RENAME_URL" value="${SP_WEB_SERVICE_FILE_RENAME_URL}"/>
+			<entry key="SP_WEB_SERVICE_DETACH_URL" value="${SP_WEB_SERVICE_DETACH_URL}"/>			
+			
+		</propertyfile>
+		
+		<propertyfile file="${unzippedWAR_Dir}/WEB-INF/classes/lau.properties">
+			<entry key="jndi.primo" value="${jndi.primo}"/>
+			<entry key="jndi.aers" value="${jndi.aers}"/>	
+		</propertyfile>
+		
+		<replace file="${unzippedWAR_Dir}/WEB-INF/classes/log4j.xml" 
+			token="/opt/data/primo/log/${weblogic.Name}.primo.log" value="${LOG4J_PATH}"/>
+		
+		
+		<replace file="${unzippedWAR_Dir}/WEB-INF/classes/log4j.xml" 
+					token="info" value="${LOG4J_LEVEL}"/>
+		<replace file="${unzippedWAR_Dir}/WEB-INF/classes/log4j.xml" 
+					token="DEBUG" value="${LOG4J_LEVEL}"/>
+		<replace file="${unzippedWAR_Dir}/WEB-INF/classes/log4j.xml" 
+					token="INFO" value="${LOG4J_LEVEL}"/>
+		<replace file="${unzippedWAR_Dir}/WEB-INF/classes/log4j.xml" 
+					token="WARN" value="${LOG4J_LEVEL}"/>
+		<replace file="${unzippedWAR_Dir}/WEB-INF/classes/log4j.xml" 
+					token="ERROR" value="${LOG4J_LEVEL}"/>
+		<replace file="${unzippedWAR_Dir}/WEB-INF/classes/log4j.xml" 
+					token="FATAL" value="${LOG4J_LEVEL}"/>
+					
+	</target>
+<!-- _____________________________________end of Infrastructure replacements____________________________________ -->
+
+<!-- _____________________________________repacking jar, war & ear files________________________________________ -->
+	
+	<target name="repack" depends="replace">			
+	
+		<zip destfile="${targetDir}/${originalEarName}${WAR_name_suffix}.war" basedir="${unzippedWAR_Dir}" filesonly="false"/>
+		<copy file="${targetDir}/${originalEarName}${WAR_name_suffix}.war" todir="${unzippedEAR_Dir}" overwrite="true"/>
+		<move file="${targetDir}/${originalEarName}${WAR_name_suffix}.war" tofile="${targetDir}/${finalDeployEarName}${WAR_name_suffix}.war"/>
+		<delete dir="${unzippedWAR_Dir}" />
+	
+		
+		<zip destfile="${targetDir}/${finalDeployEarName}.ear" basedir="${unzippedEAR_Dir}" filesonly="false"/>
+		<delete dir="${unzippedEAR_Dir}" />
+
+		<echo>${line.separator}${line.separator}The ${finalDeployEarName}.ear file has been created successfully in the folder ${targetDir}</echo>
+			
+	</target>
+<!-- _____________________________________end of repacking_______________________________________________________ -->
+	
+</project>

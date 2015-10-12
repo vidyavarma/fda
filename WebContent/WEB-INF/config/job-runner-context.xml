@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+	<context:annotation-config/>
+	
+	<bean id="deleteAllArchiveJobDetails" class="org.springframework.scheduling.quartz.JobDetailBean">
+	    <property name="jobClass" value="com.nrg.lau.service.batch.DeleteAllArchiveJobDetails" />	
+	    <property name="group" value="ogs-quartz-batch" />	    
+	</bean>	
+		
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="applicationContextSchedulerContextKey">
+			<value>applicationContext</value>
+		</property>
+		<property name="overwriteExistingJobs" value="true"/>        
+		<property name="startupDelay" value="60"/> 
+	  	<property name="triggers">
+	  		<list>
+		    	<bean id="deleteAllArchiveCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		      		<property name="jobDetail" ref="deleteAllArchiveJobDetails" />		      		
+		      		<property name="cronExpression" value="0 0 7 5 * ?" />	      		
+		      		<!-- Fire at 7:00 am on the 5th day of every month  -->
+		    	</bean>	 	    	
+	    	</list>
+	  	</property>
+	</bean>
+
+</beans>	

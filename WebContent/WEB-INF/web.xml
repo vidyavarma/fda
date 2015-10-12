@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+	
+	<description>Primo Application</description>
+	<display-name>primo</display-name>
+	
+	<context-param>
+		<param-name>log4jConfigLocation</param-name>
+		<param-value>classpath:log4j.xml</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>/WEB-INF/config/web-application-loader.xml</param-value>
+	</context-param>
+	
+	<!--  
+	<listener>
+		<listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
+	</listener>
+
+	<filter>  
+	  	<filter-name>LauFilter</filter-name>  
+	  	<filter-class>com.nrg.lau.security.LauFilter</filter-class>
+	</filter>  
+	
+	<filter-mapping>
+	  	<filter-name>LauFilter</filter-name>  
+	  	<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	 -->
+	 
+	<filter>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<filter-class>com.nrg.lau.security.Filter</filter-class>
+	</filter> 
+	
+	<filter-mapping>
+      	<filter-name>springSecurityFilterChain</filter-name>
+      	<url-pattern>/*</url-pattern>
+    </filter-mapping>	
+
+ 	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+
+    <servlet>
+        <servlet-name>dispatcher</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+        	<param-name>contextConfigLocation</param-name>
+        	<param-value>classpath:dispatcher-servlet.xml</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>dispatcher</servlet-name>
+        <url-pattern>*.do</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>flex-dispatcher</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    
+    <servlet>
+    	<display-name>GetSessionStatusAction</display-name>
+    	<servlet-name>GetSessionStatusAction</servlet-name>
+    	<servlet-class>com.nrg.lau.render.GetSessionStatusAction</servlet-class>
+    </servlet>
+    
+    <servlet>
+      	<display-name>SetGroupInbox</display-name>
+      	<servlet-name>SetGroupInbox</servlet-name>
+      	<servlet-class>com.nrg.lau.servlet.SetGroupInbox</servlet-class>
+    </servlet>
+    
+    <servlet>
+      	<display-name>SetAppianValues</display-name>
+      	<servlet-name>SetAppianValues</servlet-name>
+      	<servlet-class>com.nrg.lau.webservice.SetAppianValues</servlet-class>
+    	<load-on-startup>1</load-on-startup>
+    </servlet>
+    
+     <servlet>
+      	<display-name>SetExternalRule</display-name>
+      	<servlet-name>SetExternalRule</servlet-name>
+      	<servlet-class>com.nrg.lau.webservice.SetExternalRule</servlet-class>
+    	<load-on-startup>1</load-on-startup>
+    </servlet>
+    
+    
+    <servlet-mapping>
+        <servlet-name>flex-dispatcher</servlet-name>
+        <url-pattern>/messagebroker/*</url-pattern>
+   	</servlet-mapping>
+   	
+    <servlet-mapping>
+    	<servlet-name>GetSessionStatusAction</servlet-name>
+    	<url-pattern>/validate_session.do</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+    	<servlet-name>SetGroupInbox</servlet-name>
+    	<url-pattern>/services/SetGroupInbox</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+    	<servlet-name>SetAppianValues</servlet-name>
+    	<url-pattern>/SetAppianValues</url-pattern>
+    </servlet-mapping>
+    
+     <servlet-mapping>
+    	<servlet-name>SetExternalRule</servlet-name>
+    	<url-pattern>/webService/SetExternalRule</url-pattern>
+    </servlet-mapping>
+    <welcome-file-list>
+		<welcome-file>primo.jsp</welcome-file>
+	</welcome-file-list>
+	 
+	 <session-config>
+    	<session-timeout>120</session-timeout> 
+  	</session-config>
+	
+</web-app>

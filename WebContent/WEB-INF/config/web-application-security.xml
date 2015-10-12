@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+           http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+	
+	 <security:http pattern="/webService/**" create-session="stateless" entry-point-ref="digestEntryPoint">
+    	<security:intercept-url pattern="/webService/**" access="ROLE_USER"/>
+    	<security:http-basic/> 
+    	<security:custom-filter ref="digestFilter" after="BASIC_AUTH_FILTER" />
+ 	</security:http>
+	
+	<bean id="http403EntryPoint" class="com.nrg.lau.security.Http403Redirect" />
+	 	<security:http pattern="/PRIMO.html" security="none"/>
+		<security:http pattern="/services/**" security="none"/>
+		<security:http pattern="/*.gspl" security="none"/>
+		<security:http pattern="/healthcheck.jsp" security="none"/>
+		<security:http pattern="index.html" security="none"/>
+		<security:http pattern="/index.jsp" security="none"/>
+		<security:http pattern="/primodocbrowser.html" security="none"/>
+		<security:http pattern="/primodocbrowser.jsp" security="none"/>
+		<security:http pattern="/history/history.css" security="none"/>
+		<security:http pattern="/AC_OETags.js" security="none"/>
+		<security:http pattern="/swfobject.js" security="none"/>
+		<security:http pattern="/log-reader.jsp" security="none"/>
+		<security:http pattern="/history/history.js" security="none"/>
+		<security:http pattern="/history/historyFrame.html" security="none"/>
+		<security:http pattern="/*.pdf" security="none"/>
+		<security:http pattern="/primo/primo.jsp" security="none"/>
+		<security:http pattern="/primo.jsp" security="none"/>
+		<security:http pattern="/test.jsp" security="none"/>
+		<security:http pattern="/reportxml.xml" security="none"/>
+		<security:http pattern="/reportxsl.xsl" security="none"/>
+		<security:http pattern="/validate_session.do" security="none"/>
+	    <security:http pattern="/**/*.swf" security="none"/>
+	    <security:http pattern="/login_failure.do" security="none"/>
+	    <security:http pattern="/external_site.do" security="none"/>
+	    <security:http pattern="/**/*.html" security="none"/>
+	    <security:http pattern="/setAttachment.do" security="none"/>
+	    <security:http pattern="/history/*" security="none"/>
+	    <security:http pattern="*.css*" security="none"/>
+	    <security:http pattern="*.js*" security="none"/>
+	    <security:http pattern="/SetAppianValues*" security="none"/>
+		<security:http pattern="/SetExternalRule*" security="none"/>
+	
+	<security:http entry-point-ref="authenticaionEntryPoint">
+		<security:intercept-url pattern="/messagebroker/*" access="ROLE_USER"/>
+        <security:intercept-url pattern="/*.do" access="ROLE_USER"/>
+        <security:logout logout-success-url="/login_failure.do" />
+        <security:custom-filter ref="autoLoginFilter" position="PRE_AUTH_FILTER" />
+        <security:custom-filter position="FORM_LOGIN_FILTER" ref="customAuthenticationFilter"/>
+        <security:anonymous username="guest" granted-authority="ROLE_ANONIM"/>
+	  	 <security:intercept-url pattern="/**" access="ROLE_USER"/>	
+	</security:http>
+
+	<bean id="authenticaionEntryPoint" class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
+		<property name="loginFormUrl" value="/primo.jsp" />
+	</bean>
+	
+	<bean id="autoLoginFilter" class="com.nrg.lau.security.AutoLoginFilter">
+		<property name="authenticationManager" ref="authenticationManager" />
+	</bean>
+	
+	
+	<bean id="customAuthenticationFilter" class="com.nrg.lau.security.CustomAuthenticationProcessingFilter">
+		<property name="authenticationManager" ref="authenticationManager" />
+		<property name="authenticationSuccessHandler">
+			<bean class="org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler">
+				<property name="defaultTargetUrl" value="/login_success.do" />
+				<property name="alwaysUseDefaultTargetUrl" value="false" />
+			</bean>
+		</property>
+		<property name="authenticationFailureHandler">
+			<bean class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">
+				<property name="defaultFailureUrl" value="/login_failure.do" />
+			</bean>
+		</property>
+	</bean>
+		
+	<bean id="preauthAuthProvider"	class="org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider">
+    	<property name="preAuthenticatedUserDetailsService">
+	      <bean id="userDetailsServiceWrapper"	class="com.nrg.lau.security.AutoLoginAuthenticationUserDetailsService">	      		      
+	      </bean>
+    	</property>
+    </bean>	
+
+	<bean id="authenticationProvider" class="com.nrg.lau.security.CustomAuthenticationProvider" />
+ 
+	<security:authentication-manager id="authenticationManager">
+		<security:authentication-provider ref="preauthAuthProvider"/>
+		<security:authentication-provider ref="authenticationProvider"/>	 	
+	</security:authentication-manager>   
+	 
+	
+ 
+ 	<bean id="digestFilter" class="org.springframework.security.web.authentication.www.DigestAuthenticationFilter">
+   		<!-- <property name="userDetailsService" ref="userService" /> -->
+   		<property name="authenticationEntryPoint" ref="digestEntryPoint" />
+   		<property name="userDetailsService" ref="customUserService" />
+   		<property name="passwordAlreadyEncoded" value="true"/>
+	</bean>
+ 
+	<bean id="digestEntryPoint" class="org.springframework.security.web.authentication.www.DigestAuthenticationEntryPoint">
+   		<property name="realmName" value="PRIMO"/>
+   		<property name="key" value="acegi" />
+	</bean>
+ 	<bean id="digestAuthenticationAwareSaltSource"
+		class="com.nrg.lau.security.DigestAuthenticationAwareSaltSource">
+		<property name="digestRealm" value="PRIMO" />
+	</bean>
+	<bean id="passwordEncoder" class="com.nrg.lau.security.DigestAuthenticationAwarePasswordEncoder"/>
+
+	<bean id="customUserService" class="com.nrg.lau.security.CustomUserDetailService" />
+	<security:authentication-manager>
+		<security:authentication-provider
+			user-service-ref="customUserService">
+			<security:password-encoder ref="passwordEncoder">
+				<security:salt-source ref="digestAuthenticationAwareSaltSource" />
+			</security:password-encoder>
+		</security:authentication-provider>
+	</security:authentication-manager> 	    
+</beans>

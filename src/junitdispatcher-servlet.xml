@@ -1,0 +1,1271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd 
+    	http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.0.xsd
+    	http://www.springframework.org/schema/task   http://www.springframework.org/schema/task/spring-task-3.0.xsd">
+
+	<task:annotation-driven />
+	<context:component-scan base-package="com.nrg.lau" />
+	
+	<!-- START SPRING: Controllers 	-->
+
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<!-- Limit uploads to small (5KB) files for LAU -->
+		<property name="maxUploadSize" value="20000000" />
+	</bean>
+
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass"
+			value="org.springframework.web.servlet.view.JstlView" />
+		<property name="prefix" value="/WEB-INF/jsp/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+
+	<bean id="defaultHandlerMapping"
+		class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping" />
+
+	<bean id="beanNameViewResolver"
+		class="org.springframework.web.servlet.view.BeanNameViewResolver">
+		<property name="order">
+			<value>1</value>
+		</property>
+	</bean>
+
+	<!-- END SPRING: Controllers -->
+
+	<!-- START SPRING: ApplicationContextProvider -->
+
+	<bean id="contextApplicationContextProvider" class="com.nrg.lau.security.ApplicationContextProvider" />
+
+	<!-- END SPRING: ApplicationContextProvider -->
+
+	<!-- START SPRING: Database Operations -->
+
+	<context:property-placeholder location="classpath:config.properties" />
+<!--
+	<jee:jndi-lookup id="dataSource" jndi-name="com.biogenidec.primo" />
+	<jee:jndi-lookup id="dataSource" jndi-name="com.nrg.primo" />
+	
+	<jee:jndi-lookup id="aersdataSource" jndi-name="com.biogenidec.primo" />
+	<jee:jndi-lookup id="dataSource" jndi-name="jdbc/primo"   expected-type="javax.sql.DataSource" lookup-on-startup="false"/>
+	<jee:jndi-lookup id="aersdataSource" jndi-name="jdbc/primoaers"   expected-type="javax.sql.DataSource" lookup-on-startup="false" />	
+	
+	<bean id="aersdataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="${jdbc.driverClassName}" />
+		<property name="url" value="${jdbc.aersurl}" /> <property name="username"
+		value="${jdbc.aersusername}" /> <property name="password"
+		value="${jdbc.aerspassword}" /> </bean>
+	<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="${jdbc.driverClassName}" />
+		<property name="url" value="${jdbc.url}" /> <property name="username"
+		value="${jdbc.username}" /> <property name="password"
+		value="${jdbc.password}" /> </bean>
+		
+		jdbc/primo - sanofi main/nrg dev
+		jdbc/primoaers - sanofi main/nrg dev
+		
+		jdbc/primo2test - nrg test
+		jdbc/primo2aerstest - nrg test
+		lookup-on-startup="false"
+	<jee:jndi-lookup id="dataSource" jndi-name="${jndi.primo}"   expected-type="javax.sql.DataSource" />
+	<jee:jndi-lookup id="aersdataSource" jndi-name="${jndi.aers}"   expected-type="javax.sql.DataSource" />
+
+    <jee:jndi-lookup id="dataSource" jndi-name="${jndi.primo}"   expected-type="javax.sql.DataSource" />
+	<jee:jndi-lookup id="aersdataSource" jndi-name="${jndi.aers}"   expected-type="javax.sql.DataSource" />
+	-->	
+
+	<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="oracle.jdbc.OracleDriver" />
+		<property name="url" value="jdbc:oracle:thin:@10.7.5.107:1521:nrg46d" /> 
+		<property name="username" value="LAU30DEV" /> 
+		<property name="password" 	value="LAU30DEV" />
+ </bean>
+
+ 	<bean id="txManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+  <bean id="lobHandler" class="org.springframework.jdbc.support.lob.OracleLobHandler">
+        <property name="nativeJdbcExtractor" ref="nativeJdbcExtractor"/>
+    </bean>
+
+    <bean id="nativeJdbcExtractor" class="org.springframework.jdbc.support.nativejdbc.CommonsDbcpNativeJdbcExtractor"/>
+	<!-- END SPRING: Database Operations -->
+
+
+	<!-- START: Action Classes	-->
+	
+	<bean name="/getReportModifier.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getReportModifierAction"/>
+	</bean>
+	<bean name="/getAccessibleUsers.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getAccessibleUsersAction"/>
+	</bean>
+	
+	<bean name="/getGroupInbox.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getGroupInboxAction"/>
+	</bean>
+	
+	<bean name="/getGroupInboxFiles.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getGroupInboxFilesAction"/>
+	</bean>
+	
+	<bean name="/setReportActivityAttachment.do" class="com.nrg.lau.render.ModelAndViewRender">
+        <constructor-arg value="setReportActivityAttachmentAction"/>
+    </bean>
+    
+ 	<bean name="/setResequence.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="setResequenceAction" />
+	</bean>
+	
+	<bean name="/getReportSummary.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getReportSummaryAction" />
+	</bean>
+	<bean name="/getDuplicateReports.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getDuplicateReportsAction" />
+	</bean>
+	<bean name="/getActivityList.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getActivityListAction" />
+	</bean>
+	<bean name="/getAuditReport.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getAuditReportAction" />
+	</bean>
+	<bean name="/getAttachmentList.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getAttachmentListAction" />
+	</bean>
+	
+	<bean name="/getContactList.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getContactListAction" />
+	</bean>	
+	<bean name="/login_failure.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="loginFailureAction" />
+	</bean>
+
+	<bean name="/login_success.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="loginSuccessAction" />
+	</bean>
+
+	<bean name="/update_reports.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="setReportsAction" />
+	</bean>
+
+	<bean name="/get_home_report.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getHomeReportAction" />
+	</bean>
+
+	<!-- START: Application -->
+	<bean name="/get_e2b_viewer.do" class="com.nrg.lau.render.ModelAndViewRender">
+ 		<constructor-arg value="getGetE2BViewerAction"/>
+ 	</bean>
+ 	<bean name="/get_external_doc_status.do" class="com.nrg.lau.render.ModelAndViewRender">
+ 		<constructor-arg value="getExternalDocStatusAction"/>
+ 	</bean>
+	<bean name="/getApplication.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getTabsAction" />
+	</bean>
+	<bean name="/getSubmissionList.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getSubmissionListAction" />
+	</bean>
+	<bean name="/getReviewList.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getReviewListAction" />
+	</bean>
+	<bean name="/getReviewReportCurrentStatus.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getReviewCurrentStatusAction" />
+	</bean>	
+	<bean name="/getCompanyNarrativeReview.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getCompanyNarrativeAction" />
+	</bean>
+	<bean name="/getEventsReview.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getEventsAction" />
+	</bean>
+	<bean name="/getSuspProductsReview.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getSuspProductsAction" />
+	</bean>	
+	<bean name="/getReportReview.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getReportReviewAction" />
+	</bean>	
+	<bean name="/getOpenByMonth.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getOpenByMonthAction" />
+	</bean>
+	<bean name="/getAvgTimeClose.do" class="com.nrg.lau.render.ModelAndViewRender">
+			<constructor-arg value="getAvgTimeCloseAction" />
+	</bean>
+	<bean name="/getOpenStatus.do" class="com.nrg.lau.render.ModelAndViewRender">
+			<constructor-arg value="getOpenStatusAction" />
+	</bean>
+	<bean name="/getOpenGroup.do" class="com.nrg.lau.render.ModelAndViewRender">
+			<constructor-arg value="getOpenGroupAction" />
+	</bean>	
+	<bean name="/getCiomsPdf.do" class="com.nrg.lau.render.ModelAndViewRender">
+			<constructor-arg value="getCiomsPdfAction" />
+	</bean>	
+	
+	<bean name="/getRolesList.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getAdminRoleAction" />
+	</bean>
+	<bean name="/getResourceList.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getResourceAction" />
+	</bean>
+	<bean name="/getRoles.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getRolesAction" />
+	</bean>
+	<bean name="/getPermissions.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getPermissionAction" />
+	</bean>	
+
+	<bean name="/getGroups.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getGroupAction" />
+	</bean>
+	<bean name="/getList.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getReportListAction" />
+	</bean>
+	
+	<bean name="/getDataTemplates.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getDataTemplateAction"  />
+	</bean>
+	<bean name="/getTemplates.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getTemplateAction"  />
+	</bean>
+	<bean name="/getLayoutTemplates.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getLayoutTemplateAction"  />
+	</bean>
+	
+	<bean name="/getAllReservedReportsList.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getReservedReportListAction" />
+	</bean>
+	<bean name="/getEditList.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getEditListAction" />
+	</bean>	
+	<bean name="/getMyReportsList.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getMyReportsListAction" />
+	</bean>
+	<bean name="/getActivities.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getActivityAction" />
+	</bean>	
+	
+	<bean name="/getMyGroupReportsList.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getMyGroupReportsListAction" />
+	</bean>
+	<bean name="/getDrillDownReportDetails.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getDrillDownReportDetailsAction" />
+	</bean>
+
+	<bean name="/getPromotedChartDrillDown.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getMyReportsListAction" />
+	</bean>	
+	
+	<bean name="/getCheckoutList.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getCheckedoutReportAction" />
+	</bean>
+	<bean name="/getReferenceList.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getRefListAction" />
+	</bean>
+	
+	<bean name="/getReportPdf.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getReportPDFAction" />
+	</bean>
+	<bean name="/setReferenceListDisplayNo.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="setReferenceListDisplayNoAction" />
+	</bean>
+ 	<bean name="/getE2B.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getE2BAction" />
+	</bean>
+ 	<bean name="/getPartnerList.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getPartnerListAction" />
+	</bean>	
+	
+	<!-- End: Application Mapping -->
+
+	<!-- START: Code list Mapping -->
+	
+	<bean name="/getLayoutDateFormats.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="LAYOUT_DATE_FORMATS" />
+	</bean>	
+	<bean name="/getLayoutLanguages.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="LANGUAGE_CODES" />
+	</bean>	
+	
+	<bean name="/getDupSearchThreshold.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="DUPLICATE_SEARCH_SCORE" />
+	</bean>	
+	<bean name="/getReportCloseStatus.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="REPORT_STATUS" />
+	</bean>
+	<bean name="/getExternalRefSource.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="OTHER_SOURCE" />
+	</bean>
+	
+	<bean name="/getReportSourceType.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="REPORT_SOURCE_TYPE" />
+	</bean>
+	<bean name="/getTimeWindow.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="TIME_WINDOW" />
+	</bean>
+	<bean name="/getActivityReason.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="REPORT_ACTIVITY_REASON" />
+	</bean>
+	<bean name="/getActivityType.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="REPORT_ACTIVITY_TYPE" />
+	</bean>	
+	
+	<bean name="/getReferenceListType.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="REFERENCE_LIST_TYPE" />
+	</bean>
+	<bean name="/getPatientLastName.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="ANONUNK" />
+	</bean>
+		<bean name="/getDemotionReason.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="DEMOTION_REASON" />
+	</bean>
+	<bean name="/getPrevPregOutcome.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="PAST_PREGNANCY_OUTCOMES" />
+	</bean>
+	<bean name="/getRelationship.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="RELATIONSHIP_TO_PATIENT" />
+	</bean>	
+
+	<bean name="/getBOReportList.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="EXTERNAL REPORT URL" />
+	</bean>
+	
+	<bean name="/getReporterCausality.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="REPORTER_CAUSALITY" />
+	</bean>	
+	<bean name="/getStateList.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="STATES" />
+	</bean>
+
+	<bean name="/getCountryList.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="COUNTRIES" />
+	</bean>
+
+	<bean name="/getAgeUnit.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="TIME_UNITS" />
+	</bean>
+
+	<bean name="/getAgeGroup.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="AGE_GROUP" />
+	</bean>
+
+	<bean name="/getStudyList.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="STUDIES" />
+	</bean>
+
+	<bean name="/getTitle.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="PERSONAL_TITLE" />
+	</bean>
+
+	<bean name="/getSourceType.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="SOURCE_TYPE" />
+	</bean>
+
+	<bean name="/getReportOriginatorType.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="REPORT_ORIGINATOR_TYPE" />
+	</bean>
+
+	<bean name="/getContactMethod.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="CONTACT_METHOD" />
+	</bean>
+
+	<bean name="/getContactReason.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="CONTACT_REASON" />
+	</bean>
+
+	<bean name="/getReporterTitle.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="REPORTER_OCCUPATION" />
+	</bean>
+
+	<bean name="/getSpeciality.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="SPECIALTY" />
+	</bean>
+
+	<bean name="/getContactType.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="CONTACT_TYPE" />
+	</bean>
+
+	<bean name="/getLabTests.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="LAB_TESTS" />
+	</bean>
+
+	<bean name="/getLabUnits.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="LAB_UNITS" />
+	</bean>
+
+	<bean name="/getPregOutcome.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="PREGNANCY_OUTCOME" />
+	</bean>
+
+	<bean name="/getYesNo.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="YESNO" />
+	</bean>
+
+	<bean name="/getYesNoNa.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="YESNONA" />
+	</bean>
+
+	<bean name="/getYesNoUnk.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="YESNOUNK" />
+	</bean>
+
+	<bean name="/getYesNoUnkNa.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="YESNOUNKNA" />
+	</bean>
+
+	<bean name="/getEventOutcome.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="EVENT_OUTCOME" />
+	</bean>
+
+	<bean name="/getDrugList.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="PRODUCT" />
+	</bean>
+
+	<bean name="/getMarketedProductType.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="MARKETED_PRODUCT_TYPE" />
+	</bean>
+	<bean name="/getIndicationList.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="INDICATIONS" />
+	</bean>
+
+	<bean name="/getActionTaken.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="ACTION_TAKEN" />
+	</bean>
+
+	<bean name="/getDoseUnit.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="DOSE_UNITS" />
+	</bean>
+
+	<bean name="/getFormulation.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="DRUG_FORM" />
+	</bean>
+
+	<bean name="/getRoute.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="DOSE_ROUTE" />
+	</bean>
+
+	<bean name="/getFrequency.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="DOSE_FREQUENCY" />
+	</bean>
+	<bean name="/getRecordReviewStatus.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="REPORT_REVIEW_STATUS" />
+	</bean>
+	<bean name="/getReportReviewStatus.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="ACTIVITY_TYPE" />
+	</bean>
+	<bean name="/getReportStatus.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="ACTION_ITEM_STATUS" />
+	</bean>
+	<bean name="/getEnrollStatus.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="STUDY_ENROLLMENT_STATUS" />
+	</bean>
+	<bean name="/getPatientSex.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="SEX" />
+	</bean>
+	<bean name="/getPregOutcomeUnit.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="TIME_UNITS" />
+	</bean>
+
+	<bean name="/getPregnancyExposure.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="PREGNANCY_FU_STATUS" />
+	</bean>
+	<bean name="/getHospitalization.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="HOSPITALIZATION_TYPE" />
+	</bean>
+	<bean name="/getReportIDList.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="LAU_REPORT_IDS" />
+	</bean>
+
+	<bean name="/getRouteTriage.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="LAU_USER_GROUPS" />
+	</bean>
+	<bean name="/getAersCaseOwnerList.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="EXTERNAL_SYSTEM_USERS" />
+	</bean>
+	<bean name="/getPregDeliverMode.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="PREGNANCY_DELIVERY_MODE" />
+	</bean>
+	<bean name="/getLiveBirthComplications.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="LIVE_BIRTH_COMPLICATIONS" />
+	</bean>
+
+	<bean name="/getReporterType.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="REPORTER_TYPE" />
+	</bean>
+	<bean name="/getYesNoNaRequested.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="YESNONANR" />
+	</bean>
+	<bean name="/getYesNoUnkNotRequested.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="YESNOUNKNR" />
+	</bean>	
+	<bean name="/getYesNoNaNotRequested.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="YESNOUNKNR" />
+	</bean>		
+	<bean name="/getExternalCaseType.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="OTHER_SOURCE_TYPE" />
+	</bean>	
+	<bean name="/getSpecialAttRequired.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="REPORT_ALERT" />
+	</bean>		
+	<bean name="/getContactOrganization.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getCodeListAction" />
+		<constructor-arg index="1" value="CONTACT_ORGANIZATION" />
+	</bean>			
+	<!-- END: Code list Mapping -->
+
+	<!-- START: Getters -->
+
+	<bean name="/getExternalReference.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getTableDataAction" />
+		<constructor-arg index="1" value="LAU_EXTERNAL_REFERENCES" />
+		<constructor-arg index="2" value="REPORT_ID" />
+	</bean>	
+	
+	<bean name="/getReport.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getTableDataAction" />
+		<constructor-arg index="1" value="LAU_REPORTS" />
+		<constructor-arg index="2" value="REPORT_ID" />
+	</bean>
+
+	<bean name="/getPatient.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getTableDataAction" />
+		<constructor-arg index="1" value="LAU_PATIENT_DETAILS" />
+		<constructor-arg index="2" value="REPORT_ID" />
+	</bean>
+	<bean name="/getReporterDetls.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getTableDataAction" />
+		<constructor-arg index="1" value="LAU_REPORTER_DETAILS" />
+		<constructor-arg index="2" value="REPORT_ID" />
+	</bean>
+
+	<bean name="/getOtherContactDetails.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getTableDataAction" />
+		<constructor-arg index="1" value="LAU_CONTACT" />
+		<constructor-arg index="2" value="REPORT_ID" />
+		<constructor-arg index="3" value="DISPLAY_NUMBER" />
+	</bean>
+	<bean name="/getLabTestDetails.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getTableDataAction" />
+		<constructor-arg index="1" value="LAU_LAB_TESTS" />
+		<constructor-arg index="2" value="REPORT_ID" />
+		<constructor-arg index="3" value="DISPLAY_NUMBER" />
+	</bean>
+	<bean name="/getMedHistory.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getTableDataAction" />
+		<constructor-arg index="1" value="LAU_MEDICAL_HISTORY" />
+		<constructor-arg index="2" value="REPORT_ID" />
+		<constructor-arg index="3" value="DISPLAY_NUMBER" />
+	</bean>
+
+	<bean name="/getEvents.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getTableDataAction" />
+		<constructor-arg index="1" value="LAU_EVENTS" />
+		<constructor-arg index="2" value="REPORT_ID" />
+		<constructor-arg index="3" value="DISPLAY_NUMBER" />
+	</bean>
+	<bean name="/getSuspProducts.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getTableDataAction" />
+		<constructor-arg index="1" value="LAU_PRODUCTS" />
+		<constructor-arg index="2" value="REPORT_ID" />
+		<constructor-arg index="3" value="DISPLAY_NUMBER" />
+		<constructor-arg index="4" value=" PRODUCT_TYPE = 'S' " />
+	</bean>
+	<bean name="/getConProducts.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getTableDataAction" />
+		<constructor-arg index="1" value="LAU_CONMED_VW" />
+		<constructor-arg index="2" value="REPORT_ID" />
+		<constructor-arg index="3" value="DISPLAY_NUMBER" />
+	</bean>
+	<bean name="/getProductDetails.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getTableDataAction" />
+		<constructor-arg index="1" value="LAU_SUSPECT_DOSAGE_VW" />
+		<constructor-arg index="2" value="REPORT_ID" />
+		<constructor-arg index="3" value="DISPLAY_NUMBER" />
+	</bean>
+	<bean name="/getTreatment.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getTableDataAction" />
+		<constructor-arg index="1" value="LAU_PRODUCTS" />
+		<constructor-arg index="2" value="REPORT_ID" />
+		<constructor-arg index="3" value="DISPLAY_NUMBER" />
+		<constructor-arg index="4" value=" PRODUCT_TYPE = 'T' " />
+	</bean>
+	<bean name="/getMedHistoryComment.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getTableDataAction" />
+		<constructor-arg index="1" value="LAU_NARRATIVE_TEXT" />
+		<constructor-arg index="2" value="REPORT_ID" />
+		<constructor-arg index="3" value="REPORT_ID" />
+		<constructor-arg index="4"
+			value="NARRATIVE_TEXT_TYPE = 'MEDHIST' " />
+	</bean>
+	<bean name="/getAdditionalInformation.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getTableDataAction" />
+		<constructor-arg index="1" value="LAU_NARRATIVE_TEXT" />
+		<constructor-arg index="2" value="REPORT_ID" />
+		<constructor-arg index="3" value="REPORT_ID" />
+		<constructor-arg index="4"
+			value="NARRATIVE_TEXT_TYPE = 'ADDITIONAL_INFORMATION' " />
+	</bean>	
+	
+	<bean name="/getCompanyNarrative.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getTableDataAction" />
+		<constructor-arg index="1" value="LAU_NARRATIVE_TEXT" />
+		<constructor-arg index="2" value="REPORT_ID" />
+		<constructor-arg index="3" value="REPORT_ID" />
+		<constructor-arg index="4"
+			value="NARRATIVE_TEXT_TYPE = 'COMPANY_NARRATIVE' " />
+	</bean>
+	<bean name="/getLocalNarrative.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getTableDataAction" />
+		<constructor-arg index="1" value="LAU_NARRATIVE_TEXT" />
+		<constructor-arg index="2" value="REPORT_ID" />
+		<constructor-arg index="3" value="REPORT_ID" />
+		<constructor-arg index="4"
+			value="NARRATIVE_TEXT_TYPE = 'LOCAL_NARRATIVE' " />
+	</bean>
+	<bean name="/getAdditionalInfo.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getTableDataAction" />
+		<constructor-arg index="1" value="LAU_NARRATIVE_TEXT" />
+		<constructor-arg index="2" value="REPORT_ID" />
+		<constructor-arg index="3" value="REPORT_ID" />
+		<constructor-arg index="4"
+			value="NARRATIVE_TEXT_TYPE = 'ADDITIONAL_INFO' " />
+	</bean>
+	<bean name="/getPregDetails.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getTableDataAction" />
+		<constructor-arg index="1" value="LAU_PREGNANCY_DETAILS" />
+		<constructor-arg index="2" value="REPORT_ID" />
+		<constructor-arg index="3" value="REPORT_ID" />
+	</bean>
+	<bean name="/getCurrPregOutcome.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getTableDataAction" />
+		<constructor-arg index="1" value="LAU_PREGNANCY_OUTCOME" />
+		<constructor-arg index="2" value="REPORT_ID" />
+		<constructor-arg index="3" value="DISPLAY_NUMBER" />
+	</bean>
+	<bean name="/getPregHistory.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getTableDataAction" />
+		<constructor-arg index="1" value="LAU_PREGNANCY_HISTORY" />
+		<constructor-arg index="2" value="REPORT_ID" />
+		<constructor-arg index="3" value="REPORT_ID" />
+	</bean>
+	<bean name="/getLinkedReports.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="getTableDataAction" />
+		<constructor-arg index="1" value="LAU_RELATED_REPORTS" />
+		<constructor-arg index="2" value="REPORT_ID" />
+		<constructor-arg index="3" value="REPORT_ID" />
+	</bean>
+	<bean name="/getAttachment.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getAttachmentAction"  />
+	</bean>
+	<bean name="/getDataTemplateAttachment.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getTemplateAttachmentAction"  />
+	</bean>
+	<bean name="/getLayoutTemplateAttachment.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getLayoutAttachmentAction"  />
+	</bean>
+	<bean name="/getE2bMessageInfo.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getE2bMessageInfoAction"  />
+	</bean>
+	<bean name="/getSQLTXT.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getSQLTXTAction"  />
+	</bean>
+	<bean name="/copyE2BDoc.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="copyE2BDocAction"  />
+	</bean>
+	<bean name="/copyE2BNode.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="copyE2BNodeAction"  />
+	</bean>
+	<bean name="/copyE2BColumn.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="copyE2BColumnAction"  />
+	</bean>
+	<bean name="/deleteE2BDoc.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="deleteE2BDocAction"  />
+	</bean>
+	<bean name="/deleteE2BNode.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="deleteE2BNodeAction"  />
+	</bean>
+	<bean name="/deleteE2BColumn.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="deleteE2BColumnAction"  />
+	</bean>
+	<bean name="/getColumnFunction.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getColFunctionAction"  />
+	</bean>
+	<bean name="/getE2BSchema.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getE2bSchemaAction"  />
+	</bean>	
+	<bean name="/getAxisAttachments.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getSiebelFileNameAction"  />
+	</bean>	
+	
+	<bean name="/getAttachmentDetails.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getAttachmentDetailsAction"  />
+	</bean>	
+	<bean name="/getAccessibleGroupsRead.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getAccessibleGroupsReadAction"  />
+	</bean>	
+	<bean name="/getAccessibleGroupsEdit.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getAccessibleGroupsEditAction"  />
+	</bean>	
+	<bean name="/getMyGroupContext.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getMyGroupContextAction"  />
+	</bean>		
+	<!-- Start: Doc Browser Application Mapping -->
+	<bean name="/getDocSearchResults.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getDocSearchResultsAction"  />
+	</bean>	
+	<bean name="/getAllReportViewGroups.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getAllReportViewGroupsAction"  />
+	</bean>	
+	<bean name="/getLetterQuestionsGroupList.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getQuestionGroupList"/>
+	</bean>
+	<!-- End:  Doc Browser Application Mapping -->
+	<!-- END: : Getters -->
+
+	<!-- START: Setters -->
+	<bean name="/setReport.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="setReportsAction" />
+	</bean>
+	<bean name="/setSiebelReport.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg index="0" value="setSiebelReportsAction" />
+	</bean>
+	<bean name="/setCheckOut.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="setCheckOutAction" />
+	</bean>
+	<bean name="/setNoAction.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="setNoAction" />
+	</bean>
+	
+	<bean name="/setCheckIn.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="setCheckInAction" />
+	</bean>
+	
+	<bean name="/setAttachment.do" class="com.nrg.lau.render.ModelAndViewRender">
+  		<constructor-arg value="setAttachmentAction" />
+ 	</bean>
+ 	<bean name="/setSiebelAttachment.do" class="com.nrg.lau.render.ModelAndViewRender">
+  		<constructor-arg value="setSiebelAttachmentAction" />
+ 	</bean>
+	<bean name="/setCopyReport.do" class="com.nrg.lau.render.ModelAndViewRender">
+  		<constructor-arg value="setCopyReportAction" />
+ 	</bean>
+ 		<bean name="/checkPromoteErrors.do" class="com.nrg.lau.render.ModelAndViewRender">
+  		<constructor-arg value="checkPromoteErrorsAction" />
+ 	</bean>
+
+ 	<bean name="/checkSaveErrors.do" class="com.nrg.lau.render.ModelAndViewRender">
+  		<constructor-arg value="checkSaveErrorsAction" />
+ 	</bean>	
+ 	<!-- <bean name="/setPromote.do" class="com.nrg.lau.render.ModelAndViewRender">
+  		<constructor-arg value="setPromoteAction" />
+ 	</bean>  -->
+ 	<bean name="/getReportCurrentStatus.do" class="com.nrg.lau.render.ModelAndViewRender">
+  		<constructor-arg value="getReportCurrentStatusAction" />
+ 	</bean>  		
+ 	<bean name="/setUserGroups.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="setGroupsAction" />
+	</bean>
+	 <bean name="/setUser.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="setUserRolesAction"/>
+	</bean>
+	<bean name="/setRoles.do" class="com.nrg.lau.render.ModelAndViewRender">
+	 <constructor-arg value="setUserPermissionsAction" />
+	</bean> 
+	<bean name="/setReferenceList.do" class="com.nrg.lau.render.ModelAndViewRender">
+	 <constructor-arg value="setReferenceListAction" />
+	</bean> 
+	<bean name="/setReferenceListDetails.do" class="com.nrg.lau.render.ModelAndViewRender">
+	 <constructor-arg value="setReferenceListDetailsAction" />
+	</bean>
+	<bean name="/setReportGroupInboxAttachment.do" class="com.nrg.lau.render.ModelAndViewRender">
+        <constructor-arg value="setReportGroupInboxAttachmentAction"/>
+    </bean> 
+ 	<bean name="/setUserGroupContext.do" class="com.nrg.lau.render.ModelAndViewRender">
+        <constructor-arg value="setUserGroupContextAction"/>
+    </bean>  
+     <bean name="/setDataTemplate.do" class="com.nrg.lau.render.ModelAndViewRender">
+	 <constructor-arg value="setDataTemplateAction" />
+    </bean> 
+    <bean name="/setLayoutTemplate.do" class="com.nrg.lau.render.ModelAndViewRender">
+	 <constructor-arg value="setLayoutTemplateAction" />
+    </bean>  
+    
+    <bean name="/setDataTemplateFile.do" class="com.nrg.lau.render.ModelAndViewRender">
+	 <constructor-arg value="setDataTemplateAttachmentAction" />
+    </bean>
+    
+     <bean name="/setLayoutTemplateFile.do" class="com.nrg.lau.render.ModelAndViewRender">
+	 <constructor-arg value="setLayoutTemplateAttachmentAction" />
+    </bean>	
+   
+    <bean name="/getFOReport.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getFOReportAction" />
+	</bean>
+    <bean name="/setUserProcodes.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="setUserProcodes" />
+	</bean>   
+	<bean name="/setProductGrouping.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="setProductGrouping" />
+	</bean>
+	<bean name="/setLetterQuestion.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="setLetterQuestion" />
+	</bean> 
+	<bean name="/getSavedReportList.do" class="com.nrg.lau.render.ModelAndViewRender">
+		<constructor-arg value="getSavedRsltRpts"/>
+	</bean>	
+	
+	<!--	 <bean name="/getDuplicateReports.do" class="com.nrg.lau.render.ModelAndViewRender">
+  		<constructor-arg value="getDuplicateReportsAction" />
+ 	</bean>		-->
+	<!-- END: : set data Mapping -->
+
+	<!-- END: Action Classes -->
+
+	<!-- START: DAO Classes	-->
+	<!--
+	<bean id="getDuplicateReportsAction" class="com.nrg.lau.render.GetDuplicateReports" />
+	-->
+
+	<bean id="getContactListAction" class="com.nrg.lau.render.GetContactList" />
+	<bean id="getAttachmentListAction" class="com.nrg.lau.render.GetAttachmentList" />
+	<bean id="loginFailureAction" class="com.nrg.lau.render.LoginFailureAction" />
+	<bean id="loginSuccessAction" class="com.nrg.lau.render.LoginSuccessAction" />
+	<bean id="setReportsAction" class="com.nrg.lau.render.SetReportsAction" />
+	<bean id="setSiebelReportsAction" class="com.nrg.lau.render.SetSiebelReportsAction" />
+	<bean id="getHomeReportAction" class="com.nrg.lau.render.GetHomeReportAction" />
+	<bean id="getTabsAction" class="com.nrg.lau.render.GetTabsAction" />
+	<bean id="getAdminRoleAction" class="com.nrg.lau.render.GetAdminRoleAction" />
+	
+	<bean id="getSubmissionListAction" class="com.nrg.lau.render.GetSubmissionListAction" />
+	<bean id="getReviewListAction" class="com.nrg.lau.render.GetReviewListAction" />	
+	<bean id="getReviewCurrentStatusAction" class="com.nrg.lau.render.GetReviewCurrentStatusAction" />
+	<bean id="getCompanyNarrativeAction" class="com.nrg.lau.render.GetCompanyNarrativeAction" />
+	<bean id="getEventsAction" class="com.nrg.lau.render.GetEventsAction" />
+	<bean id="getSuspProductsAction" class="com.nrg.lau.render.GetSuspProductsAction" />
+	<bean id="getReportReviewAction" class="com.nrg.lau.render.GetReportReviewAction" />
+	
+	<bean id="getOpenByMonthAction" class="com.nrg.lau.render.GetOpenByMonthAction" >
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<bean id="getAvgTimeCloseAction" class="com.nrg.lau.render.GetAvgTimeCloseAction" >
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<bean id="getOpenStatusAction" class="com.nrg.lau.render.GetOpenStatusAction" >
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<bean id="getOpenGroupAction" class="com.nrg.lau.render.GetOpenGroupAction" >
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<bean id="getCiomsPdfAction" class="com.nrg.lau.render.GetCiomsPdfAction" />
+
+	<bean id="getGetE2BViewerAction"  class="com.nrg.lau.render.GetE2BViewerAction" >	
+  		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<bean id="getExternalDocStatusAction"  class="com.nrg.lau.render.SetExternalDocumentStatusAction" >	
+  		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<bean id="getSavedRsltRpts" class="com.nrg.lau.regulatory.render.GetSavedResultReportsAction">
+		<property name="dataSource" ref="dataSource" />
+	</bean>		
+	<bean id="getQuestionGroupList" class="com.nrg.lau.regulatory.render.GetQuestionGroupListAction">
+	  	<property name="dataSource" ref="dataSource" />
+	</bean>			
+	<bean id="getResourceAction" class="com.nrg.lau.render.GetResourceAction" >
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<bean id="getRolesAction" class="com.nrg.lau.render.GetRolesAction">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+	<bean id="getPermissionAction" class="com.nrg.lau.render.GetPermissionAction" >
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<bean id="getGroupAction" class="com.nrg.lau.render.GetGroupAction" >
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+	<bean id="getGroupListAction" class="com.nrg.lau.render.GetGroupListAction" />
+	<bean id="getGroupMainAction" class="com.nrg.lau.render.GetGroupMainAction" />
+	<bean id="getReportListAction" class="com.nrg.lau.render.GetReportListAction">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<bean id="getReservedReportListAction" class="com.nrg.lau.render.GetReservedReportListAction">
+		<property name="dataSource" ref="dataSource" />
+	</bean>	
+	
+	<bean id="getEditListAction" class="com.nrg.lau.render.GetEditListAction">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+	<bean id="getMyReportsListAction" class="com.nrg.lau.render.GetMyReportsListAction">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<bean id="getActivityAction" class="com.nrg.lau.render.GetActivityAction">
+		<property name="dataSource" ref="dataSource" />
+	</bean>	
+	
+	<bean id="getMyGroupReportsListAction" class="com.nrg.lau.render.GetMyGroupReportsListAction">
+		<property name="dataSource" ref="dataSource" />
+	</bean>	
+	<bean id="getCheckedoutReportAction" class="com.nrg.lau.render.GetCheckedoutReportAction">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<bean id="getRefListAction" class="com.nrg.lau.render.GetRefListAction">
+		<property name="dataSource" ref="dataSource" />
+	</bean>	
+	
+	<bean id="getReportPDFAction" class="com.nrg.lau.render.GetReportPDFAction">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+	<bean id="setCheckOutAction" class="com.nrg.lau.render.SetCheckOutAction">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<bean id="setNoAction" class="com.nrg.lau.render.SetNoAction">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<bean id="setCheckInAction" class="com.nrg.lau.render.SetCheckInAction">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<bean id="getCodeListAction" class="com.nrg.lau.render.GetCodeListAction">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<bean id="GetCodeListAllAction" class="com.nrg.lau.render.GetCodeListAllAction">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<bean id="setReferenceListDisplayNoAction" class="com.nrg.lau.render.SetReferenceListDisplayNoAction">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+	<bean id="getE2BAction" class="com.nrg.lau.render.GetE2BAction">
+  		<property name="dataSource" ref="dataSource" />
+	 </bean>
+	<bean id="getPartnerListAction" class="com.nrg.lau.render.GetPartnerListAction">
+  		<property name="dataSource" ref="dataSource" />
+	 </bean>	 
+	 
+	<!-- =============== -->
+
+	<bean id="getTableDataAction" class="com.nrg.lau.render.GetReportDataAction">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	 <bean id="getAttachmentDetailsAction" class="com.nrg.lau.render.GetAttachmentDetailsAction">
+	  <property name="dataSource" ref="dataSource" />
+	 </bean>	 
+	  <bean id="getAttachmentAction" class="com.nrg.lau.render.GetAttachmentAction">
+	  <property name="dataSource" ref="dataSource" />
+	 </bean>
+	 <bean id="getTemplateAttachmentAction" class="com.nrg.lau.render.GetTemplateAttachmentAction">
+	  <property name="dataSource" ref="dataSource" />
+	 </bean>
+	  <bean id="getLayoutAttachmentAction" class="com.nrg.lau.render.GetLayoutAttachmentAction">
+	  <property name="dataSource" ref="dataSource" />
+	 </bean>
+	 <bean id="getE2bMessageInfoAction" class="com.nrg.lau.render.GetE2bMessageInfoAction">
+	  <property name="dataSource" ref="dataSource" />
+	</bean>
+	<bean id="getE2bSchemaAction" class="com.nrg.lau.render.GetE2BSchemaAction">
+	  <property name="dataSource" ref="dataSource" />
+	</bean>
+	<bean id="getSQLTXTAction" class="com.nrg.lau.render.GetSQLTXTAction">
+	  <property name="dataSource" ref="dataSource" />
+	</bean>
+	<bean id="getColFunctionAction" class="com.nrg.lau.render.GetColumnFunctionAction">
+	  <property name="dataSource" ref="dataSource" />
+	</bean>
+	<bean id="copyE2BDocAction" class="com.nrg.lau.render.CopyE2BDocAction">
+	  <property name="dataSource" ref="dataSource" />
+	</bean>
+	<bean id="copyE2BNodeAction" class="com.nrg.lau.render.CopyE2BNodeAction">
+	  <property name="dataSource" ref="dataSource" />
+	</bean>
+	<bean id="copyE2BColumnAction" class="com.nrg.lau.render.CopyE2BColumnAction">
+	  <property name="dataSource" ref="dataSource" />
+	</bean>
+	<bean id="deleteE2BDocAction" class="com.nrg.lau.render.DeleteE2BDocAction">
+	  <property name="dataSource" ref="dataSource" />
+	</bean>
+	<bean id="deleteE2BNodeAction" class="com.nrg.lau.render.DeleteE2BNodeAction">
+	  <property name="dataSource" ref="dataSource" />
+	</bean>
+	<bean id="deleteE2BColumnAction" class="com.nrg.lau.render.DeleteE2BColumnAction">
+	  <property name="dataSource" ref="dataSource" />
+	</bean>
+	<bean id="getSiebelFileNameAction" class="com.nrg.lau.render.GetSiebelFileNameAction">
+	  <property name="dataSource" ref="dataSource" />
+	</bean>
+	 
+	<bean id="getDocSearchResultsAction" class="com.nrg.lau.render.GetDocSearchResultsAction">
+	  <property name="dataSource" ref="dataSource" />
+	</bean>
+
+	 <bean id="getDataTemplateAction" class="com.nrg.lau.render.GetDataTemplateAction">
+	  <property name="dataSource" ref="dataSource" />
+	</bean>	
+	 <bean id="getTemplateAction" class="com.nrg.lau.render.GetTemplateAction">
+	  <property name="dataSource" ref="dataSource" />
+	</bean>
+	<bean id="getLayoutTemplateAction" class="com.nrg.lau.render.GetLayoutTemplateAction">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+	 
+	<!-- =============== -->
+
+
+	<bean id="setReport" class="com.nrg.lau.dao.LauReportsSetTransactionManager">
+		<property name="txManager" ref="txManager" />
+	</bean>
+	
+	<bean id="setSiebelReport" class="com.nrg.lau.dao.LauSiebelReportsSetTransactionManager">
+		<property name="txManager" ref="txManager" />
+	</bean>
+
+    <bean id="setAttachmentAction" class="com.nrg.lau.render.SetAttachmentAction">
+         <property name="dataSource" ref="dataSource" />
+    </bean>
+ 
+	<bean id="setSiebelAttachmentAction" class="com.nrg.lau.render.SetSiebelAttachmentAction">
+	  <property name="dataSource" ref="dataSource" />
+	</bean>
+	<bean id="setE2bDocAction" class="com.nrg.lau.render.SetE2BDocAction">
+	  <property name="dataSource" ref="dataSource" />
+	</bean>
+	<bean id="setE2bNodeAction" class="com.nrg.lau.render.SetE2BNodeAction">
+	  <property name="dataSource" ref="dataSource" />
+	</bean>
+	<bean id="setE2bColumnAction" class="com.nrg.lau.render.SetE2BColumnAction">
+	  <property name="dataSource" ref="dataSource" />
+	</bean>
+	<bean id="setCopyReportAction" class="com.nrg.lau.render.SetCopyReportAction">
+	  <property name="dataSource" ref="dataSource" />
+	</bean>
+	
+	<bean id="checkPromoteErrorsAction" class="com.nrg.lau.render.CheckPromoteErrorsAction">
+	  <property name="dataSource" ref="dataSource" />
+	</bean>
+ 	<bean id="setProductGrouping" class="com.nrg.lau.regulatory.render.SetProductGroupingAction">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<bean id="setLetterQuestion" class="com.nrg.lau.regulatory.render.SetLetterQuestionsAction">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+ 	<bean id="checkSaveErrorsAction" class="com.nrg.lau.render.CheckSaveErrorsAction">
+	  <property name="dataSource" ref="dataSource" />
+	</bean>	 
+<!-- 	 
+	<bean id="setPromoteAction" class="com.nrg.lau.render.SetPromoteAction">
+	  <property name="dataSource" ref="aersdataSource" />
+	  <property name="primoDataSource" ref="dataSource"/>  
+	</bean>	 -->
+	
+	<bean id="getReportCurrentStatusAction" class="com.nrg.lau.render.GetReportCurrentStatusAction">
+	  	<property name="dataSource" ref="dataSource" />
+	</bean>	
+	
+	<bean id="setGroupsAction" class="com.nrg.lau.render.SetGroupsAction" />
+ 
+	<bean id="setGroups" class="com.nrg.lau.dao.LauUserGroupSetTransactionManager">
+		<property name="txManager" ref="txManager" />
+	</bean>
+	
+	<bean id="setUserRolesAction" 	class="com.nrg.lau.render.SetUserRolesAction" />
+
+	<bean id="setUserRoles" class="com.nrg.lau.dao.LauUserRolesSetTransactionManager">
+		<property name="txManager" ref="txManager" />
+	</bean>
+	
+	<bean id="setUserPermissionsAction"  class="com.nrg.lau.render.SetPermissionsAction" />
+	
+	<bean id="setUserPermissions" class="com.nrg.lau.dao.LauUserPermissionsSetTransactionManager">
+	 	<property name="txManager" ref="txManager" />
+	</bean>
+		
+	<bean id="setReferenceListAction" class="com.nrg.lau.render.SetReferenceListAction">
+	  	<property name="dataSource" ref="dataSource" />
+	</bean>
+  	
+	<bean id="setDataTemplateAction" 	class="com.nrg.lau.render.SetDataTemplateAction" >
+		<property name="dataSource" ref="dataSource" />
+	</bean>	
+	
+	<bean id="setLayoutTemplateAction" 	class="com.nrg.lau.render.SetLayoutTemplateAction" >
+		<property name="dataSource" ref="dataSource" />
+	</bean>	
+	
+	<bean id="setDataTemplateAttachmentAction" 	class="com.nrg.lau.render.SetDataTemplateAttachmentAction" >
+		<property name="dataSource" ref="dataSource" />
+	</bean>	
+	
+	<bean id="setLayoutTemplateAttachmentAction" 	class="com.nrg.lau.render.SetLayoutTemplateAttachmentAction" >
+		<property name="dataSource" ref="dataSource" />
+	</bean>	
+	
+
+	<bean id="setReferenceListDetailsAction" class="com.nrg.lau.render.SetReferenceListDetailsAction">
+	  	<property name="dataSource" ref="dataSource" />
+	</bean>
+ 	
+ 	<bean id="getDuplicateReportsAction" class="com.nrg.lau.render.GetDuplicateReportsAction">
+	  <property name="dataSource" ref="dataSource" />
+	</bean>
+	
+	<bean id="getReportSummaryAction" class="com.nrg.lau.render.GetReportSummaryAction">
+	  <property name="dataSource" ref="dataSource" />
+	</bean>	 
+	
+	<bean id="getActivityListAction" class="com.nrg.lau.render.GetActivityList" >
+	  <property name="dataSource" ref="dataSource" />
+	</bean>
+	
+	<bean id="getAuditReportAction" class="com.nrg.lau.render.PrimoAuditReport" >
+	  <property name="dataSource" ref="dataSource" />
+	</bean>	
+	
+	<bean id="setResequenceAction" class="com.nrg.lau.render.SetResequenceAction" >
+	  <property name="dataSource" ref="dataSource" />
+	</bean>	
+	
+	<bean id="setReportActivityAttachmentAction" class="com.nrg.lau.render.SetReportActivityAttachmentAction">
+   	</bean>
+    
+    <bean id="setReportActivityAttachment" class="com.nrg.lau.dao.LauReportActivityAttachmentSetTransactionManager">
+		<property name="txManager" ref="txManager" />
+		<property name="lobHandler" ref="lobHandler" />
+		
+	</bean>
+	
+	<bean id="setReportGroupInboxAttachmentAction" 	class="com.nrg.lau.render.SetGroupInboxAction" />
+	
+	<bean id="setUserGroupContextAction" 	class="com.nrg.lau.render.LauUserSessionOverride" />
+	
+	
+	<bean id="setReportGroupInboxMgr" class="com.nrg.lau.dao.LauGroupInboxAttachmentSetTransactionManager">
+		<property name="txManager" ref="txManager" />
+	</bean>
+	
+	<bean id="getGroupInboxAction" class="com.nrg.lau.render.GetGroupInboxAction" >
+	  <property name="dataSource" ref="dataSource" />
+	</bean> 
+	<bean id="getGroupInboxFilesAction" class="com.nrg.lau.render.GetGroupInboxFilesAction" >
+	  <property name="dataSource" ref="dataSource" />
+	</bean> 	
+		
+	<bean id="getReportModifierAction" class="com.nrg.lau.render.GetReportModifierList" >
+	  <property name="dataSource" ref="dataSource" />
+	</bean> 
+	
+	<bean id="getAccessibleUsersAction" class="com.nrg.lau.render.GetAccessibleUsersList" >
+	  <property name="dataSource" ref="dataSource" />
+	</bean> 
+	
+	<bean id="getDrillDownReportDetailsAction" class="com.nrg.lau.render.GetDrillDownReportDetailsAction" >
+	  <property name="dataSource" ref="dataSource" />
+	</bean>
+	
+	<bean id="getAccessibleGroupsReadAction" class="com.nrg.lau.render.GetAccessibleGroupsReadAction">
+	  <property name="dataSource" ref="dataSource" />
+	 </bean>
+	 <bean id="getAccessibleGroupsEditAction" class="com.nrg.lau.render.GetAccessibleGroupsEditAction">
+	  <property name="dataSource" ref="dataSource" />
+	 </bean>
+	 <bean id="getMyGroupContextAction" class="com.nrg.lau.render.GetMyGroupContextAction">
+	  <property name="dataSource" ref="dataSource" />
+	 </bean>	 
+	
+<!-- 	 <bean id="genericLoader" class="com.nrg.lau.security.GenericLoader" init-method="init">
+		<property name="dataSource" ref="dataSource" />
+	</bean>		 -->
+	<bean id="getAllReportViewGroupsAction" class="com.nrg.lau.render.GetAllReportViewGroupsAction">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<bean id="getFOReportAction" class="com.nrg.lau.render.GetFOReportAction">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<bean id="setUserProcodes" class="com.nrg.lau.regulatory.render.SetUserProcodes">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<!-- END: DAO Classes -->
+	<bean id="userLoginErrorMap" class="java.util.HashMap">
+	</bean>
+	<bean id="setRunAdhocQuery" class="com.nrg.lau.regulatory.render.SetRunAdhocQuery">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<bean id="setAdhocQueryAction" class="com.nrg.lau.regulatory.render.SetAdhocQueryAction">
+		<property name="dataSource" ref="dataSource" />
+   	</bean>
+</beans>

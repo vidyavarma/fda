@@ -1,0 +1,10 @@
+patientepisodename
+patientdeathreport
+patientdetermineautopsy
+parentmedicalepisodename
+parentdrugindication
+parentdrugreaction
+reactionmeddrallt
+reactionmeddrapt
+drugindication
+drugrecuraction

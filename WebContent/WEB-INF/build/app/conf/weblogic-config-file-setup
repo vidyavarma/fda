@@ -1,0 +1,6 @@
+1) Create a new folder “primo” under weblogic domain folder where PRIMO application is going to get deployed.
+2) Copy the config.properties file from SVN which is under \primoregulatory\WebContent\WEB-INF\build\app\conf
+2) Add below code to your domain specific setDomainEnv.cmd file, file can be found under \domains\your domain name\bin.
+	set CLASSPATH=%CLASSPATH%;%DOMAIN_HOME%\primo
+	Note: Make sure “DOMAIN_HOME” is already set with the full path of your domain folder in setDomainEnv.cmd file
+3) Restart your weblogic server.
