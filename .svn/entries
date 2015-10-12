@@ -1,0 +1,71 @@
+10
+
+dir
+6923
+svn://november/primo-reg/trunk/java
+svn://november
+
+
+
+2014-05-12T17:50:23.319374Z
+6827
+mlau
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+9752b26c-2368-364e-a3da-a42dff281ebd
+
+.project
+file
+
+
+
+
+2014-06-05T08:59:55.131000Z
+b76c50e9c342d9ac915917e9310d83b7
+2013-06-10T12:36:40.822132Z
+3017
+sabraham
+has-props
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+219
+
+WebContent
+dir
+
+ref-libs
+dir
+
+src
+dir
+
