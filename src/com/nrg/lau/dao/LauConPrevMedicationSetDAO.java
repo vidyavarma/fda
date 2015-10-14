@@ -238,10 +238,4 @@ public class LauConPrevMedicationSetDAO implements IReportNarrativeDAO<LauConPre
 		
 	}
 	
-	/**
-	  	
-	  	LAU_PRODUCTS & LAU_DOSING TABLE
-	 
-	 */
-	
 }
