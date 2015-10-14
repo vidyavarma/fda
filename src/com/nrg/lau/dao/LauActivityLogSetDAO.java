@@ -148,22 +148,6 @@ public class LauActivityLogSetDAO implements IReportChildSetDAO<LauActivityLog>{
 		log.info("lauActivityLogSetDAO delete() ID -> " + id);		
 	}
 	
-	/**
-	 * activityLogId
-activityType 
-reportUpdateReasonCode 
-reportUpdateReasonDesc 
-reportId 
-updateUserId           
-updateTimeStamp
-	 "LAU_REPORT_ACTIVITY_LOG"
-	  (
-	    "ACTIVITY_LOG_ID"           NUMBER NOT NULL ENABLE,
-	    "REPORT_ID"                 NUMBER NOT NULL ENABLE,
-	    "ACTIVITY_TYPE"             VARCHAR2(50 BYTE) NOT NULL ENABLE,
-	    "REPORT_UPDATE_REASON_CODE" VARCHAR2(50 BYTE),
-	    "REPORT_UPDATE_REASON_DESC" VARCHAR2(500 BYTE),
-	    "UPDATE_USER_ID"            VARCHAR2(300 BYTE) NOT NULL ENABLE,
-	    "UPDATE_TIMESTAMP" TIMESTAMP (0)**/
+	
 
 }

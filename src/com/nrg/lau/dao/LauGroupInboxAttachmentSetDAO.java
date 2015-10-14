@@ -192,23 +192,5 @@ public class LauGroupInboxAttachmentSetDAO implements IReportChildSetDAO<LauRepo
 		
 	}
 	
-	/**
-			
-		LAU_REPORT_ATTACHMENTS
- 
-		ATTACHMENT_ID         NOT NULL NUMBER                           
-		REPORT_ID             NOT NULL NUMBER                           
-		ACTIVITY_ID                    NUMBER                           
-		DOCUMENT_NAME                  VARCHAR2(300)                    
-		DOCUMENT_TYPE                  VARCHAR2(50)                     
-		BINARY_FILE_TYPE               VARCHAR2(50)                     
-		FILE_NAME                      VARCHAR2(500)                    
-		PROMOTE_DOCUMENT               VARCHAR2(5)                      
-		EXTERNAL_DOCUMENT_URL          VARCHAR2(4000)                   
-		ATTACHMENT                     BLOB()                           
-		UPDATE_USER_ID        NOT NULL VARCHAR2(300)                    
-		UPDATE_TIMESTAMP      NOT NULL TIMESTAMP(2) WITH LOCAL TIME ZONE 
-	 
-	 */
-
+	
 }

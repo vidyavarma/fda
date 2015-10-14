@@ -27,11 +27,7 @@ public class LauDataTemplateDAO {
 	private final String SQL_UPDATE_STRING = "UPDATE LAU_DATA_TEMPLATES SET UPDATE_USER_ID=?," +
 			"UPDATE_TIMESTAMP=?,TEMPLATE_NAME=?,TEMPLATE_DESCRIPTION=?,STANDARD_REPORT=? WHERE " +
 			"DATA_TEMPLATE_ID=?";
-	/*
-	 * private final String SQL_UPDATE_STRING = "UPDATE LAU_DATA_TEMPLATES SET DATA_TEMPLATE=?," +
-			"TEMPLATE_NAME=?,TEMPLATE_DESCRIPTION=?,STANDARD_REPORT=?,UPDATE_USER_ID=?,UPDATE_TIMESTAMP=?," +
-			"WHERE DATA_TEMPLATE_ID=?";
-	 */
+	
 				
 	public void save(HttpServletRequest request,SimpleJdbcTemplate template,
 			DataSource datasource) throws Exception {
@@ -88,7 +84,6 @@ public class LauDataTemplateDAO {
 	
 	private Object[] getParameters(LauDataTemplate lauTemplate, String userId, java.sql.Timestamp dt)
 	{	log.info("Entered getParameters");
-		//LauDataTemplate lauTemplate = this.dataTemplate; 
 		log.info("Temp Name---->"+lauTemplate.getTemplateName());
 		log.info("Temp DESC---->"+lauTemplate.getTemplateDescription());
 		log.info("Temp Report---->"+lauTemplate.getStdReport());
