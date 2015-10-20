@@ -23,7 +23,7 @@ public class LetterGenerationTransactionMgr  extends TestCase{
 		request.setAttribute("lauUsers","unitest");
 		log.info("user set 1111");
 		lauReportsMgr.insertLetterGenValues(request, response);
-
+		log.info("insert done!");
 	
 	}
 	
